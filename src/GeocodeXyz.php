@@ -57,6 +57,21 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
      */
     private $auth;
 
+    /**
+     * @var string
+     */
+    private $geomode;
+
+    /**
+     * @var string
+     */
+    private $region;
+
+    /**
+     * @var string
+     */
+    private $searchmode;
+
     public function geocodeQuery(GeocodeQuery $query): Collection
     {
         $address = $query->getText();
@@ -64,7 +79,7 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         if (filter_var($address, FILTER_VALIDATE_IP)) {
             throw new UnsupportedOperation('Geocode.xyz Provider does not support IP addresses.');
         }
-        $queryData = array_merge(self::DEFAULT_OPTIONS, $query->getAllData());
+        $queryData = array_merge($this->getDefinedOptions(), $query->getAllData());
         $this->validateOptions($queryData);
 
         return $this->executeQuery($address, $queryData);
@@ -73,7 +88,7 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
     public function reverseQuery(ReverseQuery $query): Collection
     {
         $address = $query->getCoordinates()->getLatitude() . ',' . $query->getCoordinates()->getLongitude();
-        $queryData = array_merge(self::DEFAULT_OPTIONS, $query->getAllData());
+        $queryData = array_merge($this->getDefinedOptions(), $query->getAllData());
         $this->validateOptions($queryData);
 
         return $this->executeQuery($address, $queryData);
@@ -84,9 +99,15 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         return 'geocodexyz';
     }
 
-    public function __construct(\Http\Client\HttpClient $client, string $auth = '')
+    public function __construct(\Http\Client\HttpClient $client, array $options = [])
     {
-        $this->auth = trim($auth);
+        $mergedOptions = array_merge(self::DEFAULT_OPTIONS, $options);
+        $this->validateOptions($options);
+
+        $this->auth = $mergedOptions['auth'] ?? '';
+        $this->geomode = $mergedOptions[self::OPTION_GEOMODE];
+        $this->region = $mergedOptions[self::OPTION_REGION];
+        $this->searchmode = $mergedOptions[self::OPTION_SEARCHMODE];
 
         parent::__construct($client);
     }
@@ -172,19 +193,19 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
 
     private function generateUrlQueryString(string $search, array $queryData): string
     {
-        $clonedQueryData = $queryData;
-        unset($clonedQueryData[self::OPTION_SEARCHMODE]);
-
-        $clonedQueryData[$queryData[self::OPTION_GEOMODE]] = 1;
-        $clonedQueryData[$queryData[self::OPTION_SEARCHMODE]] = $search;
-        $clonedQueryData['geoit'] = 'json';
-        $clonedQueryData['moreinfo'] = 1;
+        $dataToBuild = [];
+        $dataToBuild[self::OPTION_GEOMODE] = $queryData[self::OPTION_GEOMODE];
+        $dataToBuild[$queryData[self::OPTION_GEOMODE]] = 1;
+        $dataToBuild[self::OPTION_REGION] = $queryData[self::OPTION_REGION];
+        $dataToBuild[$queryData[self::OPTION_SEARCHMODE]] = $search;
+        $dataToBuild['geoit'] = 'json';
+        $dataToBuild['moreinfo'] = 1;
 
         if ($this->auth !== '') {
-            $clonedQueryData['auth'] = $this->auth;
+            $dataToBuild['auth'] = $this->auth;
         }
 
-        return http_build_query($clonedQueryData);
+        return http_build_query($dataToBuild);
     }
 
     private function validateOptions(array $queryData): void
@@ -219,5 +240,14 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         return new InvalidArgument(
             sprintf('Invalid option %s value, the value must one of "%s"', $option, implode(', ', $availableValues))
         );
+    }
+
+    private function getDefinedOptions(): array
+    {
+        return [
+            self::OPTION_GEOMODE => $this->geomode,
+            self::OPTION_REGION => $this->region,
+            self::OPTION_SEARCHMODE => $this->searchmode,
+        ];
     }
 }
