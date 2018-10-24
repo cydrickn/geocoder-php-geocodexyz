@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cydrickn\Geocoder\Provider\GeocodeXyz\Error;
 
 use Geocoder\Exception\Exception;

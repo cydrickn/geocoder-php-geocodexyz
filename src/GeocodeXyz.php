@@ -8,12 +8,15 @@ use Geocoder\Collection;
 use Geocoder\Exception\InvalidArgument;
 use Geocoder\Exception\UnsupportedOperation;
 use Geocoder\Http\Provider\AbstractHttpProvider;
+use Geocoder\Model\Address;
+use Geocoder\Model\AddressBuilder;
 use Geocoder\Model\AddressCollection;
 use Geocoder\Provider\Provider;
 use Geocoder\Query\GeocodeQuery;
 use Geocoder\Query\ReverseQuery;
+use Http\Client\HttpClient;
 
-class GeocodeXyz extends AbstractHttpProvider implements Provider
+final class GeocodeXyz extends AbstractHttpProvider implements Provider
 {
     const ENDPOINT_URL = 'https://geocode.xyz/';
 
@@ -26,8 +29,8 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
     const OPTION_VALUE_GEOMODE_NOTSTRICT  = 'nostrict';
 
     const DEFAULT_OPTIONS = [
-        static::OPTION_GEOMODE => static::OPTION_GEOMODE_NOTSTRICT,
-        static::OPTION_REGION => 'World',
+        'geomode' => 'nostrict',
+        'region' => 'World',
     ];
 
     const AVAILABLE_REGIONS = [
@@ -90,10 +93,10 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         return 'geocodexyz';
     }
 
-    public function __construct(\Http\Client\HttpClient $client, array $options = [])
+    public function __construct(HttpClient $client, array $options = [])
     {
         $mergedOptions = array_merge(self::DEFAULT_OPTIONS, $options);
-        $this->validateOptions($options);
+        $this->validateOptions($mergedOptions);
 
         $this->auth = $mergedOptions['auth'] ?? '';
         $this->geomode = $mergedOptions[self::OPTION_GEOMODE];
@@ -157,9 +160,9 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         return new AddressCollection($collection);
     }
 
-    private function generateAddress(array $data): \Geocoder\Model\Address
+    private function generateAddress(array $data): Address
     {
-        $address = new \Geocoder\Model\AddressBuilder($this->getName());
+        $address = new AddressBuilder($this->getName());
         $address
             ->setCountry($data['country'] ?? null)
             ->setCountryCode($data['country_code'] ?? null)
@@ -169,7 +172,7 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
             ->setPostalCode($data['postal'] ?? null)
         ;
 
-        return $address->build(\Geocoder\Model\Address::class);
+        return $address->build(Address::class);
     }
 
     private function checkError(array $response): void

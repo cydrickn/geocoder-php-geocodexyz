@@ -3,11 +3,12 @@
 namespace Cydrickn\Geocoder\Provider\GeocodeXyz\Tests;
 
 use Cydrickn\Geocoder\Provider\GeocodeXyz\GeocodeXyz;
+use Geocoder\Exception\InvalidArgument;
 use Geocoder\Exception\UnsupportedOperation;
 use Geocoder\IntegrationTest\BaseTestCase;
 use Geocoder\Query\GeocodeQuery;
 
-class GeocodeXyzTests extends BaseTestCase
+class GeocodeXyzTest extends BaseTestCase
 {
     protected function getCacheDir()
     {
@@ -21,7 +22,7 @@ class GeocodeXyzTests extends BaseTestCase
     }
 
     /**
-     * @expectedException UnsupportedOperation
+     * @expectedException \Geocoder\Exception\UnsupportedOperation
      * @expectedExceptionMessage Geocode.xyz Provider does not support IP addresses.
      */
     public function testUnsupportedOperationForIPv4()
@@ -31,7 +32,7 @@ class GeocodeXyzTests extends BaseTestCase
     }
 
     /**
-     * @expectedException UnsupportedOperation
+     * @expectedException \Geocoder\Exception\UnsupportedOperation
      * @expectedExceptionMessage Geocode.xyz Provider does not support IP addresses.
      */
     public function testUnsupportedOperationForIPv6()
@@ -48,12 +49,12 @@ class GeocodeXyzTests extends BaseTestCase
         try {
             new GeocodeXyz($this->getMockedHttpClient(), ['geomode' => $geomode, 'region' => $region]);
         } catch (\Exception $ex) {
-            $this->assertInstanceOf(\Geocoder\Exception\InvalidArgument::class, $ex);
+            $this->assertInstanceOf(InvalidArgument::class, $ex);
             $this->assertSame($ex->getMessage(), $expectedMessage);
         }
     }
 
-    protected function invalidOptionsDataProvider()
+    public function invalidOptionsDataProvider()
     {
         yield ['wrongmode', 'PH', 'Invalid option geomode value, the value must one of "strictmode, nostrict"'];
         yield ['nostrict', 'WRONG', 'Invalid option region value, the value must one of "' . implode(', ', GeocodeXyz::AVAILABLE_REGIONS) . '"'];

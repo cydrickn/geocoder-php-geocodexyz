@@ -6,7 +6,7 @@ namespace Cydrickn\Geocoder\Provider\GeocodeXyz\Error;
 
 use Geocoder\Exception\Exception;
 
-class GeocodeXyzErrorFactory
+final class GeocodeXyzErrorFactory
 {
     public static function create(string $code, string $description): Exception
     {

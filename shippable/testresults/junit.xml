@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Geocoder Test Suite" tests="5" assertions="9" errors="0" failures="0" skipped="0" time="0.036512">
+    <testsuite name="Cydrickn\Geocoder\Provider\GeocodeXyz\Tests\GeocodeXyzTest" file="/usr/src/myapp/tests/GeocodeXyzTest.php" tests="5" assertions="9" errors="0" failures="0" skipped="0" time="0.036512">
+      <testcase name="testGetName" class="Cydrickn\Geocoder\Provider\GeocodeXyz\Tests\GeocodeXyzTest" classname="Cydrickn.Geocoder.Provider.GeocodeXyz.Tests.GeocodeXyzTest" file="/usr/src/myapp/tests/GeocodeXyzTest.php" line="18" assertions="1" time="0.004827"/>
+      <testcase name="testUnsupportedOperationForIPv4" class="Cydrickn\Geocoder\Provider\GeocodeXyz\Tests\GeocodeXyzTest" classname="Cydrickn.Geocoder.Provider.GeocodeXyz.Tests.GeocodeXyzTest" file="/usr/src/myapp/tests/GeocodeXyzTest.php" line="28" assertions="2" time="0.030833"/>
+      <testcase name="testUnsupportedOperationForIPv6" class="Cydrickn\Geocoder\Provider\GeocodeXyz\Tests\GeocodeXyzTest" classname="Cydrickn.Geocoder.Provider.GeocodeXyz.Tests.GeocodeXyzTest" file="/usr/src/myapp/tests/GeocodeXyzTest.php" line="38" assertions="2" time="0.000179"/>
+      <testsuite name="Cydrickn\Geocoder\Provider\GeocodeXyz\Tests\GeocodeXyzTest::testInvalidOptions" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.000673">
+        <testcase name="testInvalidOptions with data set #0" class="Cydrickn\Geocoder\Provider\GeocodeXyz\Tests\GeocodeXyzTest" classname="Cydrickn.Geocoder.Provider.GeocodeXyz.Tests.GeocodeXyzTest" file="/usr/src/myapp/tests/GeocodeXyzTest.php" line="47" assertions="2" time="0.000541"/>
+        <testcase name="testInvalidOptions with data set #1" class="Cydrickn\Geocoder\Provider\GeocodeXyz\Tests\GeocodeXyzTest" classname="Cydrickn.Geocoder.Provider.GeocodeXyz.Tests.GeocodeXyzTest" file="/usr/src/myapp/tests/GeocodeXyzTest.php" line="47" assertions="2" time="0.000132"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
