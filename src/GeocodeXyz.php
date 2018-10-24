@@ -17,21 +17,17 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
 {
     const ENDPOINT_URL = 'https://geocode.xyz/';
 
-    const AVAILABLE_OPTIONS = ['geomode', 'region', 'searchmode'];
+    const AVAILABLE_OPTIONS = ['geomode', 'region'];
 
     const OPTION_GEOMODE = 'geomode';
     const OPTION_REGION = 'region';
-    const OPTION_SEARCHMODE = 'searchmode';
 
     const OPTION_VALUE_GEOMODE_STRICT = 'strictmode';
     const OPTION_VALUE_GEOMODE_NOTSTRICT  = 'nostrict';
-    const OPTION_VALUE_SEARCHMODE_LOCATE = 'locate';
-    const OPTION_VALUE_SEARCHMODE_SCANTEXT = 'scantext';
 
     const DEFAULT_OPTIONS = [
         static::OPTION_GEOMODE => static::OPTION_GEOMODE_NOTSTRICT,
         static::OPTION_REGION => 'World',
-        static::OPTION_SEARCHMODE => static::OPTION_SEARCHMODE_LOCATE,
     ];
 
     const AVAILABLE_REGIONS = [
@@ -66,11 +62,6 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
      * @var string
      */
     private $region;
-
-    /**
-     * @var string
-     */
-    private $searchmode;
 
     public function geocodeQuery(GeocodeQuery $query): Collection
     {
@@ -107,7 +98,6 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         $this->auth = $mergedOptions['auth'] ?? '';
         $this->geomode = $mergedOptions[self::OPTION_GEOMODE];
         $this->region = $mergedOptions[self::OPTION_REGION];
-        $this->searchmode = $mergedOptions[self::OPTION_SEARCHMODE];
 
         parent::__construct($client);
     }
@@ -120,9 +110,7 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         try {
             $this->checkError($response);
 
-            if ($searchMode === self::OPTION_VALUE_SEARCHMODE_LOCATE) {
-                return $this->generateCollectionFromLocate($response);
-            }
+            return $this->generateCollectionFromLocate($response);
         } catch (Error\NoResultError $ex) {
             return new AddressCollection();
         } catch (\Exception $ex) {
@@ -197,7 +185,7 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         $dataToBuild[self::OPTION_GEOMODE] = $queryData[self::OPTION_GEOMODE];
         $dataToBuild[$queryData[self::OPTION_GEOMODE]] = 1;
         $dataToBuild[self::OPTION_REGION] = $queryData[self::OPTION_REGION];
-        $dataToBuild[$queryData[self::OPTION_SEARCHMODE]] = $search;
+        $dataToBuild['locate'] = $search;
         $dataToBuild['geoit'] = 'json';
         $dataToBuild['moreinfo'] = 1;
 
@@ -211,20 +199,12 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
     private function validateOptions(array $queryData): void
     {
         $geoMode = $queryData[self::OPTION_GEOMODE];
-        $searchMode = $queryData[self::OPTION_SEARCHMODE];
         $region = explode(',', $queryData[self::OPTION_REGION]);
 
         if (!in_array($geoMode, [self::OPTION_VALUE_GEOMODE_STRICT, self::OPTION_VALUE_GEOMODE_NOTSTRICT])) {
             throw $this->createOptionInvalidArgumentException(
                 self::OPTION_GEOMODE,
                 [self::OPTION_VALUE_GEOMODE_STRICT, self::OPTION_VALUE_GEOMODE_NOTSTRICT]
-            );
-        }
-
-        if (!in_array($searchMode, [self::OPTION_VALUE_SEARCHMODE_LOCATE, self::OPTION_VALUE_SEARCHMODE_SCANTEXT])) {
-            throw $this->createOptionInvalidArgumentException(
-                self::OPTION_SEARCHMODE,
-                [self::OPTION_VALUE_SEARCHMODE_LOCATE, self::OPTION_VALUE_SEARCHMODE_SCANTEXT]
             );
         }
 
@@ -247,7 +227,6 @@ class GeocodeXyz extends AbstractHttpProvider implements Provider
         return [
             self::OPTION_GEOMODE => $this->geomode,
             self::OPTION_REGION => $this->region,
-            self::OPTION_SEARCHMODE => $this->searchmode,
         ];
     }
 }
