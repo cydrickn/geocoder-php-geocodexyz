@@ -108,7 +108,7 @@ final class GeocodeXyz extends AbstractHttpProvider implements Provider
     private function executeQuery(string $search, array $queryData): AddressCollection
     {
         $url = self::ENDPOINT_URL . '?' . $this->generateUrlQueryString($search, $queryData);
-        $response = json_decode($this->getUrlContents($url));
+        $response = json_decode($this->getUrlContents($url), true);
 
         try {
             $this->checkError($response);
